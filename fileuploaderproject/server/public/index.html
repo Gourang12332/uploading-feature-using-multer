@@ -1,0 +1,42 @@
+<form action="/upload" method="post" id="uploadForm" enctype="multipart/form-data">
+    <label for="fileInput">Choose PDF:</label>
+    <input type="file" id="fileInput" name="file" accept="application/pdf" required>
+    <progress id="progressBar" value="0" max="100" style="width: 100%; height: 20px; display: none;"></progress>
+    <button type="submit">Upload</button>
+</form>
+
+<script>
+    const uploadForm = document.getElementById('uploadForm');
+    const progressBar = document.getElementById('progressBar');
+
+    // Add event listener for form submission
+    uploadForm.addEventListener('submit', function (e) {
+        e.preventDefault();  // Prevent default form submission
+
+        const formData = new FormData(uploadForm);
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/upload', true);
+
+        // Show progress bar during upload
+        xhr.upload.onprogress = function (event) {
+            if (event.lengthComputable) {
+                const percentComplete = (event.loaded / event.total) * 100;
+                progressBar.value = percentComplete;
+                progressBar.style.display = 'block';  // Show progress bar
+            }
+        };
+
+        // Handle the response from the server
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                alert('File uploaded successfully!');
+                progressBar.style.display = 'none';  // Hide progress bar
+            } else {
+                alert('Error during file upload.');
+            }
+        };
+
+        xhr.send(formData);  // Send form data (file)
+    });
+</script>
